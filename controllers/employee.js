@@ -1,4 +1,4 @@
-const Employee = require("../models/Employee");
+const Employee = require("../models/employee"); // Adjust the path as necessary
 
 const employeeCreate = async (req, res) => {
   try {
