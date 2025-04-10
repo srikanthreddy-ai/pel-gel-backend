@@ -42,12 +42,13 @@ const createUser = async (req, res, next) => {
     if (!user) {
       return res.status(400).json({ message: "failed to create user" });
     }
-    res.json({ message: "User created successfully" });
+    res.status(201).json(user);
   } catch (error) {
-    res.send({
-      message: "Error occurred while logging in",
-      error: error.message,
-    });
+    if (error.code === 11000) {
+      res.status(400).json({ error: "Username or email already exists" });
+    } else {
+      res.status(500).json({ error: "Server error", message: error.message });
+    }
   }
 };
 module.exports = {

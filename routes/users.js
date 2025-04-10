@@ -18,12 +18,12 @@ const { login, createUser } = require("../controllers/login");
  *           schema:
  *             type: object
  *             required:
- *               - email
+ *               - username
  *               - password
  *             properties:
- *               email:
+ *               username:
  *                 type: string
- *                 example: user@example.com
+ *                 example: adminuser
  *               password:
  *                 type: string
  *                 example: securePassword123
@@ -57,11 +57,12 @@ router.post("/login", login);
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - username
  *               - email
  *               - password
+ *               - role
  *             properties:
- *               name:
+ *               username:
  *                 type: string
  *                 example: John Doe
  *               email:
