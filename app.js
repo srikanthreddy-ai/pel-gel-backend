@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const express = require("express");
+const cors = require("cors");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
@@ -26,7 +27,7 @@ const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Production API",
+      title: "PEL backend API",
       version: "1.0.0",
       description: "API for managing production shifts, departments, and more",
     },
@@ -62,6 +63,14 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
 
+// Allow requests from your frontend
+app.use(cors({
+  origin: "*",                      // or "*" to allow all origins
+  credentials: true,               // if using cookies or auth headers
+}));
+
+// Or allow all (dev-only)
+app.use(cors());
 // ──────────────────────── Middleware ──────────────────────── //
 app.use(logger("dev")); // Morgan for HTTP logging
 app.use(bodyParser.json());

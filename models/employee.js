@@ -25,10 +25,10 @@ const Employee = new mongoose.Schema({
     type: String,
     required: true,
   },
-  startDate: {
+  joiningDate: {
     type: Date,
   },
-  endDate: {
+  lastDate: {
     type: Date,
   },
 });
