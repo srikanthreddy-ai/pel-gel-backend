@@ -34,6 +34,9 @@ const swaggerOptions = {
       {
         url: "http://localhost:3000/v1/api",
       },
+      {
+        url: "https://pel-gel-backend.onrender.com/v1/api",
+      },
     ],
     components: {
       securitySchemes: {
