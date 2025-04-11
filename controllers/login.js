@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/adminUser");
+const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const log = require("../handlers/logger");
 

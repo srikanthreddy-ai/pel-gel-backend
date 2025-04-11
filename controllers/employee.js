@@ -2,8 +2,7 @@ const Employee = require("../models/employee"); // Adjust the path as necessary
 
 const employeeCreate = async (req, res) => {
   try {
-    const { name, department, position } = req.body;
-    const newEmployee = new Employee({ name, department, position });
+    const newEmployee = new Employee(req.body);
 
     await newEmployee.save();
 
@@ -21,18 +20,18 @@ const employeeCreate = async (req, res) => {
   }
 };
 
-const getEmployees = async (req, res) => {
+const getEmployeesQuery = async (req, res) => {
   try {
-    const { employeeCode, employeeName } = req.query;
+    const { empCode, fullName } = req.query;
 
     let filter = {};
 
-    if (employeeCode) {
-      filter.employeeCode = employeeCode;
+    if (empCode) {
+      filter.empCode = empCode;
     }
 
-    if (employeeName) {
-      filter.employeeName = { $regex: employeeName, $options: "i" };
+    if (fullName) {
+      filter.fullName = { $regex: fullName, $options: "i" };
     }
 
     const employees = await Employee.find(filter);
@@ -77,11 +76,10 @@ const getEmployeeById = async (req, res) => {
 const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, department, position } = req.body;
 
     const updatedEmployee = await Employee.findByIdAndUpdate(
       id,
-      { name, department, position },
+      req.body,
       { new: true }
     );
 
@@ -131,9 +129,35 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
+const getEmployees = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1; // Default page 1
+    const limit = parseInt(req.query.limit) || 10; // Default 10 records per page
+    const skip = (page - 1) * limit;
+    const employees = await Employee.find()
+      .skip(skip)
+      .limit(limit);
+    const total = await Employee.countDocuments();
+    res.status(200).json({
+      status: true,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      data: employees,
+    });
+  } catch (error) {
+    res.status(500).send({
+      status: false,
+      message: "Error retrieving employees",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   employeeCreate,
   getEmployees,
+  getEmployeesQuery,
   getEmployeeById,
   updateEmployee,
   deleteEmployee,

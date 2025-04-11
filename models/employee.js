@@ -1,38 +1,124 @@
 const mongoose = require("mongoose");
 
-const Employee = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: true,
+const BankDetailsSchema = new mongoose.Schema({  
+  accountNumber: String,
+  ifscCode: String,
+  bankName: String,
+  branchName: String,
+  accountHolderName: String,
+}, { _id: false });
+
+const EmployeeSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      enum: ["Mr", "Ms", "Mrs", "Dr"],
+    },
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    fullName: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    designation: {
+      type: String,
+      required: true,
+    },
+    department: {
+      type: String,
+    },
+    role: {
+      type: String,
+    },
+    cader: {
+      type: String,
+      required: true,
+    },
+    empCode: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    pfNo: {
+      type: String,
+    },
+    basic: {
+      type: Number,
+    },
+    fda: {
+      type: Number,
+    },
+    newVda: {
+      type: Number,
+    },
+    splPay: {
+      type: Number,
+    },
+    hra: {
+      type: Number,
+    },
+    ca: {
+      type: Number,
+    },
+    sa: {
+      type: Number,
+    },
+    ea: {
+      type: Number,
+    },
+    serAllow: {
+      type: Number,
+    },
+    linkMaintQcStoresAllow: {
+      type: Number,
+    },
+    seniorityAllow: {
+      type: Number,
+    },
+    stdGrossTotal: {
+      type: Number,
+    },
+    totalGrossWithCantAb: {
+      type: Number,
+    },
+    uanNumber: {
+      type: String,
+    },
+    soWo: {
+      type: String,
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    joiningDate: {
+      type: Date,
+    },
+    lastDate: {
+      type: Date,
+    },
+    dateOfProbation: {
+      type: Date,
+    },
+    bankDetails: BankDetailsSchema,
   },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  designation: {
-    type: String,
-    required: true,
-  },
-  employeeCader: {
-    type: String,
-    required: true,
-  },
-  employeeId: {
-    type: String,
-    required: true,
-  },
-  joiningDate: {
-    type: Date,
-  },
-  lastDate: {
-    type: Date,
-  },
+  { timestamps: true }
+);
+
+// Optional: Combine first and last name into fullName before saving
+EmployeeSchema.pre("save", function (next) {
+  this.fullName = `${this.title} ${this.firstName} ${this.lastName}`;
+  next();
 });
 
-const Staff = mongoose.model("Employee", Employee);
+const Staff = mongoose.model("Employee", EmployeeSchema);
 
 module.exports = Staff;
