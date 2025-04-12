@@ -191,11 +191,19 @@ router.post("/employees", verifyToken, employeeCreate);
  *         schema:
  *           type: number
  *         description: page number
+ *         example: 1
  *       - in: query
  *         name: limit
  *         schema:
  *           type: number
  *         description: pagelimit number
+ *         example: 10
+ *       - in: query
+ *         name: empCode
+ *         schema:
+ *           type: string
+ *         description: Employee Code to filter employees
+ *         example: EMP12345
  *     responses:
  *       200:
  *         description: A list of employees
