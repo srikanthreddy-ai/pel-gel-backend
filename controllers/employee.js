@@ -134,7 +134,13 @@ const getEmployees = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Default page 1
     const limit = parseInt(req.query.limit) || 10; // Default 10 records per page
     const skip = (page - 1) * limit;
-    const employees = await Employee.find()
+    const { empCode, fullName } = req.query;
+    let filter = {};
+
+    if (empCode) {
+      filter.empCode = empCode;
+    }
+    const employees = await Employee.find(filter)
       .skip(skip)
       .limit(limit);
     const total = await Employee.countDocuments();
