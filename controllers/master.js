@@ -93,11 +93,10 @@ const getProductionDeptById = async (req, res) => {
 const updateProductionDept = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, manager } = req.body;
 
     const updatedDept = await ProductionDepartment.findByIdAndUpdate(
       id,
-      { name, description, manager },
+      req.body,
       { new: true } // Return the updated department
     );
 
@@ -153,8 +152,8 @@ const deleteProductionDept = async (req, res) => {
  * */
 const createProductionNature = async (req, res) => {
   try {
-    const { name, description } = req.body;
-    const existingNature = await ProductionNature.findOne({ name });
+    const { productionCode } = req.body;
+    const existingNature = await ProductionNature.findOne({ productionCode });
     if (existingNature) {
       return res.status(400).send({
         status: false,
@@ -162,10 +161,7 @@ const createProductionNature = async (req, res) => {
       });
     }
 
-    const newProductionNature = new ProductionNature({
-      name,
-      description,
-    });
+    const newProductionNature = new ProductionNature(req.body);
 
     await newProductionNature.save();
 
@@ -226,11 +222,9 @@ const getProductionNatureById = async (req, res) => {
 const updateProductionNature = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description } = req.body;
-
     const updatedProductionNature = await ProductionNature.findByIdAndUpdate(
       id,
-      { name, description },
+      req.body,
       { new: true }
     );
 
@@ -289,11 +283,9 @@ const deleteProductionNature = async (req, res) => {
 
 const createProductionShift = async (req, res) => {
   try {
-    const { name, startTime, endTime, department } = req.body;
+    const { shiftName } = req.body;
     const existingShift = await ProductionShift.findOne({
-      name,
-      startTime,
-      endTime,
+      shiftName,
     });
     if (existingShift) {
       return res.status(400).send({
@@ -302,12 +294,7 @@ const createProductionShift = async (req, res) => {
       });
     }
 
-    const newShift = new ProductionShift({
-      name,
-      startTime,
-      endTime,
-      department,
-    });
+    const newShift = new ProductionShift(req.body);
 
     await newShift.save();
 
@@ -326,7 +313,7 @@ const createProductionShift = async (req, res) => {
 };
 const getProductionShifts = async (req, res) => {
   try {
-    const shifts = await ProductionShift.find().populate("department");
+    const shifts = await ProductionShift.find();
 
     res.status(200).send({
       status: true,
@@ -344,7 +331,7 @@ const getProductionShifts = async (req, res) => {
 const getProductionShiftById = async (req, res) => {
   try {
     const { id } = req.params;
-    const shift = await ProductionShift.findById(id).populate("department");
+    const shift = await ProductionShift.findById(id);
 
     if (!shift) {
       return res.status(404).send({
@@ -369,11 +356,9 @@ const getProductionShiftById = async (req, res) => {
 const updateProductionShift = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, startTime, endTime, department } = req.body;
-
     const updatedShift = await ProductionShift.findByIdAndUpdate(
       id,
-      { name, startTime, endTime, department },
+      req.body,
       { new: true } // Return the updated document
     );
 

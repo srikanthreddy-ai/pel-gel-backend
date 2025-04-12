@@ -1,19 +1,44 @@
 const mongoose = require("mongoose");
 
 const employeeSalary = new mongoose.Schema({
+  employee_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Employee",
+    required: true,
+  },
+  employeeName: {
+    type: String,
+    required: true,
+  },
+  employeeCode: {
+    type: String,
+    required: true,
+  },
+  employeeDesignation: {
+    type: String,
+    required: true,
+  },
+  employeeShift: {
+    type: String,
+    required: true,
+  },
   amount: {
     type: String,
     required: true,
   },
-  incentives: {
+  incentiveAmount: {
     type: Number,
     required: true,
   },
-  allowences: {
+  allowenceAmount: {
     type: Number,
     required: true,
   },
-  date: {
+  startDate: {
+    type: Date,
+    required: true,
+  },
+  endDate: {
     type: Date,
     required: true,
   },

@@ -12,6 +12,7 @@ const ProductionDept = new mongoose.Schema({
   buidlingCode: {
     type: String,
     required: true,
+    unique: true,
   },
   description: {
     type: String,

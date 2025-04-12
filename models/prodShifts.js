@@ -5,7 +5,7 @@ const ProductionShifts = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  shifthrs: {
+  shiftHrs: {
     type: String,
     required: true,
   },

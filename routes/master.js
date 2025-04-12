@@ -41,13 +41,49 @@ const {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - buidlingId
+ *               - budlingName
+ *               - buidlingCode
+ *               - startDate
+ *               - endDate
  *             properties:
  *               name:
  *                 type: string
+ *                 description: Name of the production department
+ *                 example: Assembly Line A
+ *               buidlingId:
+ *                 type: number
+ *                 description: Unique identifier of the building
+ *                 example: 101
+ *               budlingName:
+ *                 type: string
+ *                 description: Name of the building where the department is located
+ *                 example: Main Manufacturing Unit
+ *               buidlingCode:
+ *                 type: string
+ *                 description: Unique building code
+ *                 example: MFG-01
+ *               description:
+ *                 type: string
+ *                 description: Additional details about the department
+ *                 example: Handles electronic component assembly
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Department operational start date (YYYY-MM-DD)
+ *                 example: 2024-01-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Department operational end date (YYYY-MM-DD)
+ *                 example: 2026-12-31
  *     responses:
  *       201:
  *         description: Created successfully
  */
+
+
 router.post("/ProductionDept", verifyToken, createProductionDept);
 
 /**
@@ -149,13 +185,87 @@ router.delete("/ProductionDept/:id", verifyToken, deleteProductionDept);
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - building_id
+ *               - productionNature
+ *               - productionType
+ *               - productionCode
+ *               - manpower
+ *               - norms
+ *               - startDate
+ *               - endDate
  *             properties:
- *               type:
+ *               building_id:
  *                 type: string
+ *                 format: uuid
+ *                 description: ObjectId reference to the Production Department
+ *                 example: 643f1bdeec1234567890abcd
+ *               productionNature:
+ *                 type: string
+ *                 description: Nature of production (e.g., Continuous, Batch)
+ *                 example: Batch
+ *               productionType:
+ *                 type: string
+ *                 description: Type of production carried out
+ *                 example: group
+ *               productionCode:
+ *                 type: string
+ *                 description: Unique code to identify the production nature
+ *                 example: PDC-001
+ *               manpower:
+ *                 type: number
+ *                 description: Number of people required for this production nature
+ *                 example: 12
+ *               norms:
+ *                 type: number
+ *                 description: Production norms or standards to follow
+ *                 example: 140000
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Start date of the production nature (YYYY-MM-DD)
+ *                 example: 2024-04-01
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *                 description: End date of the production nature (YYYY-MM-DD)
+ *                 example: 2025-03-31
+ *               incentives:
+ *                 type: array
+ *                 description: Array of incentive objects with range, amount, and value per unit
+ *                 items:
+ *                   type: object
+ *                   required:
+ *                     - range
+ *                     - amount
+ *                     - each
+ *                   properties:
+ *                     range:
+ *                       type: array
+ *                       items:
+ *                         type: number
+ *                       description: The incentive applicable range (e.g., [100, 200])
+ *                       example: [100, 200]
+ *                     amount:
+ *                       type: number
+ *                       description: Total incentive amount for the given range
+ *                       example: 500
+ *                     each:
+ *                       type: number
+ *                       description: Incentive amount per unit in the range
+ *                       example: 5
+ *                 example:
+ *                     - range: [0, 200]
+ *                       amount: 5
+ *                       each: 100
+ *                     - range: [201, 300]
+ *                       amount: 4
+ *                       each: 8
  *     responses:
  *       201:
  *         description: Created successfully
  */
+
 router.post("/ProductionNature", verifyToken, createProductionNature);
 
 /**
@@ -260,11 +370,21 @@ router.delete("/ProductionNature/:id", verifyToken, deleteProductionNature);
  *             properties:
  *               shiftName:
  *                 type: string
+ *                 description: Name of the shift
+ *                 example: A   
+ *               shiftHrs:
+ *                 type: number
+ *                 description: Start hours of the shift
+ *                 example: 8      
  *               startTime:
  *                 type: string
+ *                 description: Shift start time (HH:mm)
+ *                 example: 08:00
  *                 format: time
  *               endTime:
  *                 type: string
+ *                 description: Shift end time (HH:mm)
+ *                 example: 16:00
  *                 format: time
  *     responses:
  *       201:
