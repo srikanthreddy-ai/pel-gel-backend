@@ -15,17 +15,17 @@ const login = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
     const token = jwt.sign(
-      { userId: user._id, username: user.username, role:user.role },
+      { userId: user._id, username: user.username },
       "yourSecretKey",
-      { expiresIn: "1h" }
+      { expiresIn: "2h" }
     );
     const refreshToken = jwt.sign(
-      { userId: user._id },
+      { userId: user._id, username: user.username},
       "yourRefreshSecretKey",
       { expiresIn: "7d" }
     );
 
-    res.json({ username, token, refreshToken });
+    res.json({ username, token, refreshToken, role:user.role });
   } catch (error) {
     res.send({
       message: "Error occurred while logging in",
