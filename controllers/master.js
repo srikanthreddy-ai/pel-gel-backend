@@ -7,14 +7,7 @@ const ProductionShift = require("../models/prodShifts");
  * */
 const createProductionDept = async (req, res) => {
   try {
-    const {
-      buildingId,
-      budlingName,
-      buidlingCode,
-      description,
-      startDate,
-      endDate,
-    } = req.body;
+    const { buidlingCode } = req.body;
 
     const existingDept = await ProductionDepartment.findOne({ buidlingCode });
     if (existingDept) {
@@ -24,14 +17,7 @@ const createProductionDept = async (req, res) => {
       });
     }
 
-    const newDept = new ProductionDepartment({
-      buildingId,
-      budlingName,
-      buidlingCode,
-      description,
-      startDate,
-      endDate,
-    });
+    const newDept = new ProductionDepartment(req.body);
 
     await newDept.save();
 
