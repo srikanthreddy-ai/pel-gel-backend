@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 
 const ProductionShifts = new mongoose.Schema({
   shiftName: {
-    type: Number,
+    type: String,
     required: true,
+    unique: true,
   },
   shiftHrs: {
-    type: String,
+    type: Number,
     required: true,
   },
   startTime: {
