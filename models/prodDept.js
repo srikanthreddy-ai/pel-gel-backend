@@ -1,15 +1,15 @@
 const mongoose = require("mongoose");
 
 const ProductionDept = new mongoose.Schema({
-  buidlingId: {
+  buildingId: {
     type: Number,
     required: true,
   },
-  budlingName: {
+  buildingName: {
     type: String,
     required: true,
   },
-  buidlingCode: {
+  buildingCode: {
     type: String,
     required: true,
     unique: true,

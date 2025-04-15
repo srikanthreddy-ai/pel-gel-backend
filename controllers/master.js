@@ -8,7 +8,7 @@ const ProductionShift = require("../models/prodShifts");
 const createProductionDept = async (req, res) => {
   try {
     const {
-      buidlingId,
+      buildingId,
       budlingName,
       buidlingCode,
       description,
@@ -25,7 +25,7 @@ const createProductionDept = async (req, res) => {
     }
 
     const newDept = new ProductionDepartment({
-      buidlingId,
+      buildingId,
       budlingName,
       buidlingCode,
       description,

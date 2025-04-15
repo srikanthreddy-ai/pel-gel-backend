@@ -42,25 +42,21 @@ const {
  *           schema:
  *             type: object
  *             required:
- *               - buidlingId
- *               - budlingName
- *               - buidlingCode
+ *               - buildingId
+ *               - buildingName
+ *               - buildingCode
  *               - startDate
  *               - endDate
  *             properties:
- *               name:
- *                 type: string
- *                 description: Name of the production department
- *                 example: Assembly Line A
- *               buidlingId:
+ *               buildingId:
  *                 type: number
  *                 description: Unique identifier of the building
  *                 example: 101
- *               budlingName:
+ *               buildingName:
  *                 type: string
  *                 description: Name of the building where the department is located
  *                 example: Main Manufacturing Unit
- *               buidlingCode:
+ *               buildingCode:
  *                 type: string
  *                 description: Unique building code
  *                 example: MFG-01
