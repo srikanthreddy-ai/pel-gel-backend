@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 
 const employeeTimeSheet = new mongoose.Schema({
+  productionDate: {
+    type: Date,
+    required: true,
+  },
   building_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ProductionDept",
     required: true,
   },
-  naturre_id: {
+  nature_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ProductionNature",
     required: true,
@@ -16,12 +20,17 @@ const employeeTimeSheet = new mongoose.Schema({
     ref: "Employee",
     required: true,
   },
+  shift_id: {
+    type: String,
+    ref: "Shifts",
+    required: true,
+  },
   shiftName: {
     type: String,
     required: true,
   },
   shiftHrs: {
-    type: String,
+    type: Number,
     required: true,
   },
   employeeCode: {
@@ -30,20 +39,24 @@ const employeeTimeSheet = new mongoose.Schema({
   },
   incentiveAmount: {
     type: Number,
-    required: true,
   },
   allowenceAmount: {
     type: Number,
-    required: true,
   },
-  norms:{
-    type:Number,
-    required:true
+  norms: {
+    type: Number,
+    required: true,
   },
   dateTime: {
     type: Date,
-    required: true,
+    default: Date.now,
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+    index: true,
   },
 });
 
+employeeTimeSheet.index({ employee_id: 1, shiftName: 1 }, { unique: true });
 module.exports = mongoose.model("timeSheet", employeeTimeSheet);

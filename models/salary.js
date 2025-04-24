@@ -42,6 +42,9 @@ const employeeSalary = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  isDeleted: {
+    type: Boolean, default: false, index: true
+  },
 });
 
 const Salary = mongoose.model("empSalary", employeeSalary);

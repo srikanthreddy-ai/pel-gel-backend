@@ -228,20 +228,23 @@ router.delete("/ProductionDept/:id", verifyToken, deleteProductionDept);
  *                 example: 2025-03-31
  *               incentives:
  *                 type: array
- *                 description: Array of incentive objects with range, amount, and value per unit
+ *                 description: Array of incentive objects with min, max, amount, and value per unit
  *                 items:
  *                   type: object
  *                   required:
- *                     - range
+ *                     - min
+ *                     - max 
  *                     - amount
  *                     - each
  *                   properties:
- *                     range:
- *                       type: array
- *                       items:
- *                         type: number
- *                       description: The incentive applicable range (e.g., [100, 200])
- *                       example: [100, 200]
+ *                     min:
+ *                       type: number
+ *                       description: The incentive applicable range (e.g., 100, 200)
+ *                       example: 100
+ *                     max:
+ *                       type: number
+ *                       description: The incentive applicable range (e.g., 200, 300)
+ *                       example: 200
  *                     amount:
  *                       type: number
  *                       description: Total incentive amount for the given range
@@ -251,12 +254,14 @@ router.delete("/ProductionDept/:id", verifyToken, deleteProductionDept);
  *                       description: Incentive amount per unit in the range
  *                       example: 5
  *                 example:
- *                     - range: [0, 200]
+ *                     - min: 0
+ *                       max: 200
  *                       amount: 5
  *                       each: 100
- *                     - range: [201, 300]
+ *                     - min: 201
+ *                       max: 400
  *                       amount: 4
- *                       each: 8
+ *                       each: 100
  *     responses:
  *       201:
  *         description: Created successfully
@@ -376,12 +381,10 @@ router.delete("/ProductionNature/:id", verifyToken, deleteProductionNature);
  *                 type: string
  *                 description: Shift start time (HH:mm)
  *                 example: 08:00
- *                 format: time
  *               endTime:
  *                 type: string
  *                 description: Shift end time (HH:mm)
  *                 example: 16:00
- *                 format: time
  *     responses:
  *       201:
  *         description: Created successfully

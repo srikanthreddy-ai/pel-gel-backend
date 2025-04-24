@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const BankDetailsSchema = new mongoose.Schema({  
   accountNumber: String,
-  ifscCode: String,
+  ifsc: String,
   bankName: String,
   branchName: String,
   accountHolderName: String,
@@ -12,8 +12,7 @@ const EmployeeSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
-      enum: ["Mr", "Ms", "Mrs", "Dr"],
+      required: true
     },
     firstName: {
       type: String,
@@ -35,6 +34,7 @@ const EmployeeSchema = new mongoose.Schema(
     },
     department: {
       type: String,
+      required: true,
     },
     role: {
       type: String,
@@ -97,7 +97,7 @@ const EmployeeSchema = new mongoose.Schema(
       type: String,
     },
     dateOfBirth: {
-      type: Date,
+      type: Date
     },
     joiningDate: {
       type: Date,
@@ -107,6 +107,9 @@ const EmployeeSchema = new mongoose.Schema(
     },
     dateOfProbation: {
       type: Date,
+    },
+    isDeleted: {
+      type: Boolean, default: false, index: true
     },
     bankDetails: BankDetailsSchema,
   },

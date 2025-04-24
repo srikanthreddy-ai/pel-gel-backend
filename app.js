@@ -11,6 +11,9 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const employeeRouter = require("./routes/employee");
 const masterRouter = require("./routes/master");
+const prodMasterRouter = require("./routes/prodMaster");
+const timeSheetRouter = require("./routes/timesheet");
+const prodAllowenceRouter = require("./routes/prodAllowences");
 const log = require("./handlers/logger");
 
 // Swagger setup
@@ -33,7 +36,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:3000/v1/api",
+        url: "http://localhost:5000/v1/api",
       },
       {
         url: "https://pel-gel-backend.onrender.com/v1/api",
@@ -98,6 +101,9 @@ app.use(
 app.use("/v1/api", usersRouter);
 app.use("/v1/api", employeeRouter);
 app.use("/v1/api", masterRouter);
+app.use("/v1/api", prodMasterRouter);
+app.use("/v1/api", timeSheetRouter);
+app.use("/v1/api", prodAllowenceRouter);
 
 // ──────────────────────── MongoDB Connection ──────────────────────── //
 const mongoURI = process.env.MONGO_URI;

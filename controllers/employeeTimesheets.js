@@ -9,19 +9,52 @@ const creatTimeSheet = async (req, res, next) => {
     }
     res.status(201).json(worksheet);
   } catch (error) {
-    log.error(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    if (error.code === 11000) {
+      log.error("Duplicate timesheet entry:", error);
+      return res.status(409).json({
+        message: `Duplicate timesheet entry. Employee and shift combination must be unique.`,
+        error: error.message,
+      });
+    }
+
+    // Log other errors and send a generic server error response
+    log.error("Error creating timesheet:", error);
+    return res.status(500).json({
+      message: "Server error. Please try again later.",
+      error: error.message,
+    });
   }
 };
 const getAllTimeSheets = async (req, res, next) => {
   try {
-    const worksheets = await TimeSheet.find();
+    const { building, nature, shift, date } = req.query;
+
+    const filter = {};
+
+    if (building) filter.building_id = building;
+    if (nature) filter.nature_id = nature;
+    if (shift) filter.shiftName = shift;
+
+    // Handle exact date match by creating a date range
+    if (date) {
+      const start = new Date(date);
+      const end = new Date(date);
+      end.setDate(end.getDate() + 1);
+      filter.productionDate = { $gte: start, $lt: end };
+    }
+
+    const worksheets = await TimeSheet.find(filter)
+      .populate('building_id', '_id buildingName buildingCode')
+      .populate('employee_id', '_id firstName lastName empCode fullName')
+      .populate('nature_id', '_id productionNature productionType productionCode manpower norms');
+
     res.status(200).json(worksheets);
   } catch (error) {
-    log.error(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    console.error(error.message);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 const getTimeSheetById = async (req, res, next) => {
   try {

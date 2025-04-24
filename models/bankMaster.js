@@ -24,6 +24,10 @@ const banking = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const bankMaster = mongoose.model("bankMaster", banking);

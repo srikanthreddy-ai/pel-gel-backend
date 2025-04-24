@@ -25,6 +25,9 @@ const ProductionDept = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  isDeleted: {
+    type: Boolean, default: false, index: true
+  },
 });
 
 const Dept = mongoose.model("ProductionDept", ProductionDept);

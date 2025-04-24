@@ -1,5 +1,12 @@
 const mongoose = require("mongoose");
 
+const incentiveSchema = new mongoose.Schema({
+  min:Number,
+  max: Number,
+  amount: Number,
+  each: Number,
+}, { _id: false });
+
 const ProductionNature = new mongoose.Schema({
   building_id:{
     type: mongoose.Schema.Types.ObjectId,
@@ -27,22 +34,7 @@ const ProductionNature = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  incentives: [
-    {
-      range: {
-        type: Array,
-        required: true,
-      },
-      amount: {
-        type: Number,
-        required: true,
-      },
-      each: {
-        type: Number,
-        required: true,
-      },
-    },
-  ],
+  incentives:[incentiveSchema],
   startDate: {
     type: Date,
     required: true,
@@ -50,6 +42,9 @@ const ProductionNature = new mongoose.Schema({
   endDate: {
     type: Date,
     required: true,
+  },
+  isDeleted: {
+    type: Boolean, default: false, index: true
   },
 });
 

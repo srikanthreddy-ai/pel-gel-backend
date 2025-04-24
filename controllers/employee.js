@@ -134,8 +134,8 @@ const getEmployees = async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Default page 1
     const limit = parseInt(req.query.limit) || 10; // Default 10 records per page
     const skip = (page - 1) * limit;
-    const { empCode, fullName } = req.query;
-    let filter = {};
+    const { empCode } = req.query;
+    let filter = { isDeleted: false };  
 
     if (empCode) {
       filter.empCode = empCode;

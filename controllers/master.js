@@ -7,16 +7,6 @@ const ProductionShift = require("../models/prodShifts");
  * */
 const createProductionDept = async (req, res) => {
   try {
-    const { buidlingCode } = req.body;
-
-    const existingDept = await ProductionDepartment.findOne({ buidlingCode });
-    if (existingDept) {
-      return res.status(400).send({
-        status: false,
-        message: "Production department with this name already exists",
-      });
-    }
-
     const newDept = new ProductionDepartment(req.body);
 
     await newDept.save();
@@ -37,7 +27,8 @@ const createProductionDept = async (req, res) => {
 
 const getProductionDepts = async (req, res) => {
   try {
-    const productionDepts = await ProductionDepartment.find();
+    let filter = {};
+    const productionDepts = await ProductionDepartment.find(filter);
     res.status(200).send({
       status: true,
       data: productionDepts,
@@ -166,7 +157,12 @@ const createProductionNature = async (req, res) => {
 };
 const getProductionNatures = async (req, res) => {
   try {
-    const productionNatures = await ProductionNature.find();
+    let filter = {};
+    const productionNatures = await ProductionNature.find(filter).populate(
+      "building_id",
+      "_id buildingName buildingCode"
+    );
+    console.log(productionNatures);
     res.status(200).send({
       status: true,
       data: productionNatures,
@@ -269,21 +265,8 @@ const deleteProductionNature = async (req, res) => {
 
 const createProductionShift = async (req, res) => {
   try {
-    const { shiftName } = req.body;
-    const existingShift = await ProductionShift.findOne({
-      shiftName,
-    });
-    if (existingShift) {
-      return res.status(400).send({
-        status: false,
-        message: "Production shift already exists",
-      });
-    }
-
     const newShift = new ProductionShift(req.body);
-
     await newShift.save();
-
     res.status(201).send({
       status: true,
       message: "Production shift created successfully",
