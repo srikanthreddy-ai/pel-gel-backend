@@ -58,5 +58,5 @@ const employeeTimeSheet = new mongoose.Schema({
   },
 });
 
-employeeTimeSheet.index({ employee_id: 1, shiftName: 1 }, { unique: true });
+employeeTimeSheet.index({ productionDate:1, employee_id: 1, shiftName: 1 }, { unique: true });
 module.exports = mongoose.model("timeSheet", employeeTimeSheet);

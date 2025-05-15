@@ -7,6 +7,7 @@ const ProductionAllowences = new mongoose.Schema({
   },
   shift: {
     type: String,
+    enum: ["Day", "Night"],
   },
   amount: {
     type: Number,

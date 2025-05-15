@@ -6,24 +6,36 @@ const employeeAllowences = new mongoose.Schema({
     required: true,
     ref: "Employee",
   },
-    productionDate: {
-        type: Date,
-        required: true,
-    },
-   Shifts: [{
+  empCode: {
     type: String,
     required: true,
-    ref: "Shifts",
-   }],
+  },
+  allowance_id: {
+    type: String,
+    required: true,
+    ref: "ProdAllowences",
+  },
+  productionDate: {
+    type: Date,
+    required: true,
+  },
+  shifts: [
+    {
+      type: String,
+      required: true,
+      ref: "Shifts",
+    },
+  ],
   amount: {
     type: String,
     required: true,
   },
   isDeleted: {
-    type: Boolean, default: false
+    type: Boolean,
+    default: false,
   },
 });
 
-const empAllowences= mongoose.model("empAllowences", employeeAllowences);
+const empAllowences = mongoose.model("empAllowences", employeeAllowences);
 
 module.exports = empAllowences;

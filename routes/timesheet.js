@@ -7,6 +7,11 @@ const {
   getTimeSheetById,
   updateTimeSheet,
 } = require("../controllers/employeeTimesheets");
+const {
+  creatAllowance,
+  getAllAllowances,
+  updateAllowance,
+} = require("../controllers/employeeAllowance");
 
 /**
  * @swagger
@@ -151,5 +156,9 @@ router.get("/getTimeSheet/:id", verifyToken, getTimeSheetById);
  *       500:
  *         description: Internal server error
  */
-router.put("/updateTimeSheet/:id", verifyToken, updateTimeSheet);      
+router.put("/updateTimeSheet/:id", verifyToken, updateTimeSheet);
+
+router.post("/createEmpAllowence", verifyToken, creatAllowance);
+router.get("/getEmpAllowences", verifyToken, getAllAllowances);
+router.put("/updateEmpAllowence/:id", verifyToken, updateAllowance);
 module.exports = router;
