@@ -8,6 +8,7 @@ const {
   updateEmployee,
   deleteEmployee,
   getEmployeesQuery,
+  employeeUpload
 } = require("../controllers/employee");
 
 /**
@@ -386,6 +387,7 @@ router.delete("/employees/:id", verifyToken, deleteEmployee);
  */
 
 router.get("/employeesQuery", verifyToken, getEmployeesQuery);
+router.post("/employeesUpload", verifyToken, employeeUpload);
 
 
 module.exports = router;

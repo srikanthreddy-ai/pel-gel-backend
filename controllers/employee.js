@@ -1,4 +1,6 @@
 const Employee = require("../models/employee"); // Adjust the path as necessary
+const fs = require('fs');
+const csv = require('csv-parser');
 
 const employeeCreate = async (req, res) => {
   try {
@@ -160,6 +162,43 @@ const getEmployees = async (req, res) => {
   }
 };
 
+
+const employeeUpload = async (req, res) => {
+   const results = [];
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'CSV file is required' });
+    }
+    const filePath = req.file.path;
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', async () => {
+        try {
+          await Employee.insertMany(results); // Bulk insert into MongoDB
+          fs.unlinkSync(filePath); // Cleanup uploaded file
+          res.status(200).json({
+            status: true,
+            message: 'Employees uploaded successfully',
+            totalInserted: results.length,
+          });
+        } catch (insertError) {
+          res.status(500).json({
+            status: false,
+            message: 'Error inserting employee data',
+            error: insertError.message,
+          });
+        }
+      });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: 'Error processing upload',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   employeeCreate,
   getEmployees,
@@ -167,4 +206,5 @@ module.exports = {
   getEmployeeById,
   updateEmployee,
   deleteEmployee,
+  employeeUpload
 };

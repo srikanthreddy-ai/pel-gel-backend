@@ -23,6 +23,7 @@ const {
   getProductionShiftById,
   updateProductionShift,
   deleteProductionShift,
+  uploadMasterData
 } = require("../controllers/master");
 
 // ────────────── Production Dept ──────────────
@@ -477,5 +478,6 @@ router.put("/ProductionShift/:id", verifyToken, updateProductionShift);
  *         description: Deleted successfully
  */
 router.delete("/ProductionShift/:id", verifyToken, deleteProductionShift);
+router.post("/masterUpload", verifyToken, uploadMasterData);
 
 module.exports = router;
