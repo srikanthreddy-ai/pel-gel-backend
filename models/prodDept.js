@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ProductionDept = new mongoose.Schema({
   buildingId: {
-    type: Number,
+    type: String,
     required: true,
   },
   buildingName: {

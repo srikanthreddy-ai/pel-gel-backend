@@ -16,6 +16,7 @@ const timeSheetRouter = require("./routes/timesheet");
 const prodAllowenceRouter = require("./routes/prodAllowences");
 const log = require("./handlers/logger");
 const reportsMaster = require("./routes/reports");
+const bulkUpload = require("./routes/masterData");
 
 // Swagger setup
 const swaggerUi = require("swagger-ui-express");
@@ -106,6 +107,7 @@ app.use("/v1/api", prodMasterRouter);
 app.use("/v1/api", timeSheetRouter);
 app.use("/v1/api", prodAllowenceRouter);
 app.use("/v1/api", reportsMaster);
+app.use("/v1/api", bulkUpload);
 
 // ──────────────────────── MongoDB Connection ──────────────────────── //
 const mongoURI = process.env.MONGO_URI;

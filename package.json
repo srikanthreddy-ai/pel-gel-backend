@@ -24,6 +24,8 @@
     "jspdf-autotable": "^5.0.2",
     "mongoose": "^8.13.2",
     "morgan": "~1.9.1",
+    "multer": "^2.0.1",
+    "path": "^0.12.7",
     "pdfkit": "^0.17.0",
     "pdfkit-table": "^0.1.99",
     "swagger-jsdoc": "^6.2.8",
