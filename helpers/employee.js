@@ -57,7 +57,23 @@ const masterDataSchema = (row) => {
         res.status(500).json({ message: "Failed to process file" });
     }
 };
+
+const allowenceDataSchema = (row) => {
+    try {
+
+        return {
+            allowence: row.allowence,
+            shift: row.shift,
+            amount: row.amount
+        };
+
+    } catch (error) {
+        console.error("File read error:", error);
+        res.status(500).json({ message: "Failed to process file" });
+    }
+};
 module.exports = {
     employeeSchema,
-    masterDataSchema
+    masterDataSchema,
+    allowenceDataSchema
 };
