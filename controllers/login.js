@@ -20,12 +20,12 @@ const login = async (req, res, next) => {
       { expiresIn: "2h" }
     );
     const refreshToken = jwt.sign(
-      { userId: user._id, username: user.username},
+      { userId: user._id, username: user.username },
       "yourRefreshSecretKey",
       { expiresIn: "7d" }
     );
 
-    res.json({ username, token, refreshToken, role:user.role });
+    res.json({ username, token, refreshToken, role: user.role });
   } catch (error) {
     res.status(500).send({
       message: "Error occurred while logging in",
@@ -37,8 +37,8 @@ const login = async (req, res, next) => {
 const createUser = async (req, res, next) => {
   try {
     log.info("Creating user");
-    const { username, password, email, role,  privileges } = req.body;
-    const user = await User.create({ username, password, email, role,  privileges });
+    const { username, password, email, role, privileges } = req.body;
+    const user = await User.create({ username, password, email, role, privileges });
     if (!user) {
       return res.status(400).json({ message: "failed to create user" });
     }
@@ -60,8 +60,31 @@ const getUsers = async (req, res) => {
   }
 };
 
+const userUpdate = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const users = await User.findByIdAndUpdate(id,
+      req.body,
+      { new: true });
+     if (!users) {
+      return res.status(404).send({
+        status: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).send({
+      status: true,
+      message: "User updated successfully",
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server error", message: error.message });
+  }
+};
 module.exports = {
   login,
   createUser,
-  getUsers
+  getUsers,
+  userUpdate
 };

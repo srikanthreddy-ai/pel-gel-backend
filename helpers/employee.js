@@ -34,13 +34,13 @@ const employeeSchema = (row) => {
         };
 
     } catch (error) {
-        console.error("File read error:", err);
+        console.error("File read error:", error);
         res.status(500).json({ message: "Failed to process file" });
     }
 };
 
 
-const masterDataSchema = (data) => {
+const masterDataSchema = (row) => {
     try {
 
         return {
@@ -53,7 +53,7 @@ const masterDataSchema = (data) => {
         };
 
     } catch (error) {
-        console.error("File read error:", err);
+        console.error("File read error:", error);
         res.status(500).json({ message: "Failed to process file" });
     }
 };

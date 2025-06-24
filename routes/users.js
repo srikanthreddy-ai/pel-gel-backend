@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const { verifyToken, getUserProfile } = require("../handlers/authentication");
-const { login, createUser, getUsers } = require("../controllers/login");
+const { login, createUser, getUsers, userUpdate } = require("../controllers/login");
 
 /**
  * @swagger
@@ -82,5 +82,6 @@ router.post("/login", login);
  */
 router.post("/createUser", verifyToken, createUser);
 router.get("/usersList", verifyToken, getUsers);
+router.patch("/userUpdate/:id", verifyToken, userUpdate);
 
 module.exports = router;
