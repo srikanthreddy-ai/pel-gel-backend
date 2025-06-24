@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const { verifyToken, getUserProfile } = require("../handlers/authentication");
-const { login, createUser } = require("../controllers/login");
+const { login, createUser, getUsers } = require("../controllers/login");
 
 /**
  * @swagger
@@ -80,6 +80,7 @@ router.post("/login", login);
  *       400:
  *         description: Bad request or user already exists
  */
-router.post("/createUser", createUser);
+router.post("/createUser", verifyToken, createUser);
+router.get("/usersList", verifyToken, getUsers);
 
 module.exports = router;

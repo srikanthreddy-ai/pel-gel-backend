@@ -37,8 +37,8 @@ const login = async (req, res, next) => {
 const createUser = async (req, res, next) => {
   try {
     log.info("Creating user");
-    const { username, password, email, role } = req.body;
-    const user = await User.create({ username, password, email, role });
+    const { username, password, email, role,  privileges } = req.body;
+    const user = await User.create({ username, password, email, role,  privileges });
     if (!user) {
       return res.status(400).json({ message: "failed to create user" });
     }
@@ -51,7 +51,17 @@ const createUser = async (req, res, next) => {
     }
   }
 };
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password'); // Exclude password field
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: "Server error", message: error.message });
+  }
+};
+
 module.exports = {
   login,
   createUser,
+  getUsers
 };
