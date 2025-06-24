@@ -6,7 +6,7 @@ const Allowence = require("../models/prodAllowences");
 const fs = require('fs');
 const csv = require('csv-parser');
 const path = require("path");
-const { employeeSchema, masterDataSchema } = require('../helpers/employee');
+const { employeeSchema, masterDataSchema, allowenceDataSchema } = require('../helpers/employee');
 
 
 const uploadEmployee = async (req, res) => {
@@ -101,7 +101,7 @@ const uploadAllowenceMasterData = async (req, res) => {
             fs.createReadStream(filePath)
                 .pipe(csv())
                 .on("data", (row) => {
-                    results.push(masterDataSchema(row));
+                    results.push(allowenceDataSchema(row));
                 })
                 .on("end", async () => {
                     try {
