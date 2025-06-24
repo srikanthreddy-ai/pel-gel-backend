@@ -1,5 +1,5 @@
 const Employee = require("../models/employee");
-const Departments = require("../models/bankMaster");
+const Departments = require("../models/prodDept");
 const Nature = require("../models/prodNature");
 const Shifts = require("../models/prodShifts");
 const fs = require('fs');
