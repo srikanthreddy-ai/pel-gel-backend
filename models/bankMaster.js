@@ -5,7 +5,7 @@ const banking = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  budlingName: {
+  buildingName: {
     type: String,
     required: true,
   },
