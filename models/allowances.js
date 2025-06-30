@@ -15,6 +15,11 @@ const employeeAllowences = new mongoose.Schema({
     required: true,
     ref: "ProdAllowences",
   },
+  building_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ProductionDept",
+    required: true,
+  },
   productionDate: {
     type: Date,
     required: true,

@@ -127,6 +127,7 @@ const monthWisePayReport = async (startDate, endDate, building) => {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
+          ...(building ? { building_id: building } : {}),
         },
       },
       {
@@ -162,6 +163,7 @@ const monthWisePayReport = async (startDate, endDate, building) => {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
+          ...(building ? { building_id: building } : {}),
         },
       },
       {

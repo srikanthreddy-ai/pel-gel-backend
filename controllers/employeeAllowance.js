@@ -36,7 +36,7 @@ const getAllAllowances = async (req, res, next) => {
     }
 
     // Handle exact date match by creating a date range
-    if (productionDate) {
+    if (fromDate && toDate) {
       const start = new Date(fromDate);
       const end = new Date(toDate);
       end.setDate(end.getDate() + 1);
@@ -45,7 +45,11 @@ const getAllAllowances = async (req, res, next) => {
 
     const worksheets = await Allowance.find(filter)
       .populate("employee_id", "_id firstName lastName empCode fullName")
-      .populate("allowance_id", "_id allowence amount shift");
+      .populate("allowance_id", "_id allowence amount shift")
+      .populate("building_id", "_id buildingName");
+    if (!worksheets || worksheets.length === 0) {
+      return res.status(404).json({ message: "No timesheets found" });
+    }
 
     res.status(200).json({ status: true, data: worksheets });
   } catch (error) {

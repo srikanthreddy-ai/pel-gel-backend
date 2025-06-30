@@ -25,7 +25,7 @@ const login = async (req, res, next) => {
       { expiresIn: "7d" }
     );
 
-    res.json({ username, token, refreshToken, role: user.role });
+    res.json({ username, token, refreshToken, role: user.role, privileges: user.privileges });
   } catch (error) {
     res.status(500).send({
       message: "Error occurred while logging in",
