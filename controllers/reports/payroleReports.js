@@ -4,7 +4,7 @@ const Allowances = require("../../models/allowances");
 /***
  * get report based on the type
  */
-const dayWisePayReport = async (startDate, endDate) => {
+const dayWisePayReport = async (startDate, endDate, building) => {
   try {
     const incentives = await TimeSheets.aggregate([
       {
@@ -13,6 +13,7 @@ const dayWisePayReport = async (startDate, endDate) => {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
+          ...(building ? { building_id: building } : {}),
         },
       },
       {
@@ -116,45 +117,123 @@ const dayWisePayReport = async (startDate, endDate) => {
   }
 };
 
-const monthWisePayReport = async (req, res) => {
+const monthWisePayReport = async (startDate, endDate, building) => {
   try {
-    const { report, type, startDate, endDate } = req.query;
+    // Aggregate Incentives for the given month range
+    const incentives = await TimeSheets.aggregate([
+      {
+        $match: {
+          productionDate: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "employees", // collection to join
+          localField: "employee_id", // field in TimeSheets
+          foreignField: "_id", // field in Employees
+          as: "employee",
+        },
+      },
+      {
+        $unwind: "$employee", // flatten the array
+      },
+      {
+        $project: {
+          _id: 1,
+          productionDate: 1,
+          shiftName: 1,
+          incentiveAmount: 1,
+          employee_id: 1,
+          employeeCode: 1,
+          "employee.fullName": 1,
+          "employee.empCode": 1,
+        },
+      },
+    ]);
 
-    // Validate input parameters
-    if (!report || !type || !startDate || !endDate) {
-      return res.status(400).send("Missing required parameters.");
+    // Aggregate Allowances for the given month range
+    const allowances = await Allowances.aggregate([
+      {
+        $match: {
+          productionDate: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: "Employee", // collection to join
+          localField: "employee_id", // field in TimeSheets
+          foreignField: "_id", // field in Employees
+          as: "employees",
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          productionDate: 1,
+          employee_id: 1,
+          empCode: 1,
+          amount: 1,
+          allowance_id: 1,
+        },
+      },
+    ]);
+
+    const groupedData = new Map();
+
+    const getKey = (empCode, date) =>
+      `${empCode}__${new Date(date).toISOString().split("T")[0].slice(0, 7)}`; // Group by YYYY-MM
+
+    // Process Incentives for month
+    for (const i of incentives) {
+      const key = getKey(i.employeeCode, i.productionDate);
+      const entry = groupedData.get(key) || {
+        productionMonth: new Date(i.productionDate).toISOString().split("T")[0].slice(0, 7),
+        empCode: i.employeeCode,
+        incentives: 0,
+        allowances: 0,
+        total: 0,
+      };
+      const incentiveAmount = parseInt(i.incentiveAmount) || 0;
+      entry.incentives += incentiveAmount;
+      groupedData.set(key, entry);
     }
 
-    // Check if the date range is valid
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const timeDiff = end.getTime() - start.getTime();
-    const dayDiff = timeDiff / (1000 * 3600 * 24);
-    if (dayDiff > 31) {
-      return res.status(400).send("Date range should not exceed 31 days.");
+    // Process Allowances for month
+    for (const a of allowances) {
+      const key = getKey(a.empCode, a.productionDate);
+      const entry = groupedData.get(key) || {
+        productionMonth: new Date(a.productionDate).toISOString().split("T")[0].slice(0, 7),
+        empCode: a.empCode,
+        incentives: 0,
+        allowances: 0,
+        total: 0,
+      };
+      const allowanceAmount = parseInt(a.amount) || 0;
+      entry.allowances += allowanceAmount;
+      groupedData.set(key, entry);
     }
 
-    // Report generation logic based on type
-    if (type === "PDF") {
-      generatePDF(res, report, startDate, endDate);
-    } else if (type === "Excel") {
-      generateExcel(res, report, startDate, endDate);
-    } else if (type === "HTML") {
-      generateHTML(res, report, startDate, endDate);
-    } else {
-      return res.status(400).send("Invalid report type.");
+    // Calculate total for each entry
+    for (const [key, entry] of groupedData) {
+      entry.total = entry.incentives + entry.allowances;
     }
-    res.status(200).send({
-      status: true,
-      data: mappedData,
-    });
+
+    // Convert map to array
+    const finalGroupedData = Array.from(groupedData.values());
+
+    return finalGroupedData;
   } catch (error) {
-    res.status(500).send({
-      status: false,
-      error: error.message,
-    });
+    console.error("Error generating report:", error);
+    throw new Error("Failed to generate report.");
   }
 };
+
 module.exports = {
   dayWisePayReport,
   monthWisePayReport,

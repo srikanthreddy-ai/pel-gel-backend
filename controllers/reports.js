@@ -11,7 +11,7 @@ const { generateHTML } = require("./reports/type/html");
  */
 const getReport = async (req, res) => {
   try {
-    const { report, type, startDate, endDate } = req.query;
+    const { report, type, startDate, endDate, period, building } = req.query;
     let dataFrame = null;
 
     // Validate input parameters
@@ -27,12 +27,17 @@ const getReport = async (req, res) => {
     if (dayDiff > 31) {
       return res.status(400).send("Date range should not exceed 31 days.");
     }
-    dataFrame = await dayWisePayReport(startDate, endDate);
+    if (period === "daily") {
+      dataFrame = await dayWisePayReport(startDate, endDate, building);
+    }
+    if (period === "monthly") {
+      dataFrame = await monthWisePayReport(startDate, endDate, building);
+    }
     if (type === "pdf") {
       generatePDF(res, report, startDate, endDate, dataFrame);
     } else if (type === "csv") {
       await generateExcel(res, report, startDate, endDate, dataFrame);
-    } else if (type === "xlsx") {
+    } else if (type === "excel") {
       await generateExcel(res, report, startDate, endDate, dataFrame);
     } else if (type === "html") {
       generateHTML(res, report, startDate, endDate, dataFrame);

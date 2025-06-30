@@ -27,7 +27,7 @@ const creatAllowance = async (req, res, next) => {
 };
 const getAllAllowances = async (req, res, next) => {
   try {
-    const { empCode, productionDate } = req.query;
+    const { empCode, fromDate, toDate } = req.query;
 
     let filter = {};
 
@@ -37,8 +37,8 @@ const getAllAllowances = async (req, res, next) => {
 
     // Handle exact date match by creating a date range
     if (productionDate) {
-      const start = new Date(productionDate);
-      const end = new Date(productionDate);
+      const start = new Date(fromDate);
+      const end = new Date(toDate);
       end.setDate(end.getDate() + 1);
       filter.productionDate = { $gte: start, $lt: end };
     }

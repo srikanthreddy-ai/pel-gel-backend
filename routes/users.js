@@ -82,6 +82,6 @@ router.post("/login", login);
  */
 router.post("/createUser", verifyToken, createUser);
 router.get("/usersList", verifyToken, getUsers);
-router.patch("/userUpdate/:id", verifyToken, userUpdate);
+router.put("/userUpdate/:id", verifyToken, userUpdate);
 
 module.exports = router;
