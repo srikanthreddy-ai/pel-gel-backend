@@ -28,7 +28,9 @@ const creatTimeSheet = async (req, res, next) => {
 const getAllTimeSheets = async (req, res, next) => {
   try {
     const { building, nature, shift, date } = req.query;
-
+    const page = parseInt(req.query.page) || 1; // Default page 1
+    const limit = parseInt(req.query.limit) || 10; // Default 10 records per page
+    const skip = (page - 1) * limit;
     const filter = {};
 
     if (building) filter.building_id = building;
@@ -43,12 +45,23 @@ const getAllTimeSheets = async (req, res, next) => {
       filter.productionDate = { $gte: start, $lt: end };
     }
 
-    const worksheets = await TimeSheet.find(filter)
-      .populate('building_id', '_id buildingName buildingCode')
-      .populate('employee_id', '_id firstName lastName empCode fullName')
-      .populate('nature_id', '_id productionNature productionType productionCode manpower norms');
+    const [worksheets, total] = await Promise.all([
+      TimeSheet.find(filter)
+        .skip(skip)
+        .limit(limit)
+        .populate('building_id', '_id buildingName buildingCode')
+        .populate('employee_id', '_id firstName lastName empCode fullName')
+        .populate('nature_id', '_id productionNature productionType productionCode manpower norms'),
 
-    res.status(200).json(worksheets);
+      TimeSheet.countDocuments(filter)
+    ]);
+    res.status(200).json({
+      status: true,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      data: worksheets,
+    });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: 'Internal server error' });

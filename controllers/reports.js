@@ -27,19 +27,19 @@ const getReport = async (req, res) => {
     if (dayDiff > 31) {
       return res.status(400).send("Date range should not exceed 31 days.");
     }
-    if (period === "daily") {
+    if (period == "daily") {
       dataFrame = await dayWisePayReport(startDate, endDate, building);
     }
-    if (period === "monthly") {
+    if (period == "monthly") {
       dataFrame = await monthWisePayReport(startDate, endDate, building);
     }
-    if (type === "pdf") {
+    if (type == "pdf") {
       generatePDF(res, report, startDate, endDate, dataFrame);
-    } else if (type === "csv") {
+    } else if (type == "csv") {
       await generateExcel(res, report, startDate, endDate, dataFrame);
-    } else if (type === "excel") {
+    } else if (type == "excel") {
       await generateExcel(res, report, startDate, endDate, dataFrame);
-    } else if (type === "html") {
+    } else if (type == "html") {
       generateHTML(res, report, startDate, endDate, dataFrame);
     } else {
       return res.status(400).send("Invalid report type.");

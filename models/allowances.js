@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const employeeAllowences = new mongoose.Schema({
   employee_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "Employee",
   },
@@ -11,7 +11,7 @@ const employeeAllowences = new mongoose.Schema({
     required: true,
   },
   allowance_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "ProdAllowences",
   },
@@ -32,7 +32,7 @@ const employeeAllowences = new mongoose.Schema({
     },
   ],
   amount: {
-    type: String,
+    type: Number,
     required: true,
   },
   isDeleted: {

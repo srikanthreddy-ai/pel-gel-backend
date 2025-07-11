@@ -5,6 +5,10 @@ const incentiveSchema = new mongoose.Schema({
   max: Number,
   amount: Number,
   each: Number,
+  additionalValues: {
+    type: Boolean,
+    default: false
+  }
 }, { _id: false });
 
 const ProductionNature = new mongoose.Schema({

@@ -25,9 +25,14 @@ const creatAllowance = async (req, res, next) => {
     });
   }
 };
+
 const getAllAllowances = async (req, res, next) => {
   try {
-    const { empCode, fromDate, toDate } = req.query;
+    const { empCode, fromDate, toDate, page = 1, limit = 10 } = req.query;
+
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
 
     let filter = {};
 
@@ -35,28 +40,43 @@ const getAllAllowances = async (req, res, next) => {
       filter.empCode = empCode;
     }
 
-    // Handle exact date match by creating a date range
+    // Handle date range filter
     if (fromDate && toDate) {
       const start = new Date(fromDate);
       const end = new Date(toDate);
-      end.setDate(end.getDate() + 1);
+      end.setDate(end.getDate() + 1); // Include the full end date
       filter.productionDate = { $gte: start, $lt: end };
     }
 
+    // Count total documents matching filter
+    const totalItems = await Allowance.countDocuments(filter);
+
+    // Query paginated data
     const worksheets = await Allowance.find(filter)
       .populate("employee_id", "_id firstName lastName empCode fullName")
       .populate("allowance_id", "_id allowence amount shift")
-      .populate("building_id", "_id buildingName");
+      .populate("building_id", "_id buildingName")
+      .skip(skip)
+      .limit(limitNum)
+      .sort({ productionDate: 1 }); // Optional: sort ascending by date
+
     if (!worksheets || worksheets.length === 0) {
-      return res.status(404).json({ message: "No timesheets found" });
+      return res.status(404).json({ message: "No allowances found" });
     }
 
-    res.status(200).json({ status: true, data: worksheets });
+    res.status(200).json({
+      status: true,
+      currentPage: pageNum,
+      totalItems,
+      totalPages: Math.ceil(totalItems / limitNum),
+      data: worksheets,
+    });
   } catch (error) {
     console.error(error.message);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 const getAllowanceById = async (req, res, next) => {
   try {

@@ -21,12 +21,16 @@ const employeeTimeSheet = new mongoose.Schema({
     required: true,
   },
   shift_id: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     ref: "Shifts",
     required: true,
   },
   shiftName: {
     type: String,
+    required: true,
+  },
+   workedHrs: {
+    type: Number,
     required: true,
   },
   shiftHrs: {

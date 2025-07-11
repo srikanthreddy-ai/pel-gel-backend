@@ -23,10 +23,29 @@ const createProductionAllowence = async (req, res) => {
 };
 const getProductionAllowence = async (req, res) => {
   try {
-    const allowence = await ProductionAllowence.find();
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+
+    const skip = (page - 1) * limit;
+    let filter = { };
+    if(req.query.allowence) {
+      filter.allowence = req.query.allowence;
+    }
+    // Total count of documents
+    const totalItems = await ProductionAllowence.countDocuments();
+
+    // Paginated data
+    const allowence = await ProductionAllowence.find(filter)
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalItems / limit);
 
     res.status(200).send({
       status: true,
+      currentPage: page,
+      totalItems,
+      totalPages,
       data: allowence,
     });
   } catch (error) {
@@ -37,6 +56,7 @@ const getProductionAllowence = async (req, res) => {
     });
   }
 };
+
 
 const getProductionAllowenceById = async (req, res) => {
   try {

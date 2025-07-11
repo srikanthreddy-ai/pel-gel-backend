@@ -52,9 +52,22 @@ const createUser = async (req, res, next) => {
   }
 };
 const getUsers = async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
   try {
-    const users = await User.find().select('-password'); // Exclude password field
-    res.status(200).json(users);
+    const total = await User.countDocuments(); // Efficient count
+    const totalPages = Math.ceil(total / limit);
+    const users = await User.find()
+      .select('-password') // Exclude password
+      .skip((page - 1) * limit)
+      .limit(limit);
+    res.status(200).json({
+      status: true,
+      totalItems: total,
+      totalPages,
+      currentPage: page,
+      data: users,
+    });
   } catch (error) {
     res.status(500).json({ error: "Server error", message: error.message });
   }
@@ -66,7 +79,7 @@ const userUpdate = async (req, res) => {
     const users = await User.findByIdAndUpdate(id,
       req.body,
       { new: true });
-     if (!users) {
+    if (!users) {
       return res.status(404).send({
         status: false,
         message: "User not found",
