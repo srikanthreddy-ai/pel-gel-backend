@@ -20,10 +20,10 @@ const employeeSchema = (row) => {
             hra: Number(row.hra) || 0,
             seniorityAllow: Number(row.seniorityAllow) || 0,
             uanNumber: row.uanNumber,
-            dateOfBirth: row.dateOfBirth,
-            joiningDate: row.joiningDate,
-            lastDate: row.lastDate,
-            dateOfProbation: row.dateOfProbation,
+            dateOfBirth: new Date(row.dateOfBirth),
+            joiningDate: new Date(row.joiningDate),
+            lastDate: new Date(row.lastDate),
+            dateOfProbation: new Date(row.dateOfProbation),
             bankDetails: {
                 bankName: row.bankName,
                 accountNumber: row.accountNumber,
@@ -48,8 +48,8 @@ const masterDataSchema = (row) => {
             buildingName: row.buildingName,
             buildingCode: row.buildingCode,
             description: row.description,
-            startDate: row.startDate,
-            endDate: row.endDate,
+            startDate: new Date(row.startDate),
+            endDate: new Date(row.endDate),
         };
 
     } catch (error) {
