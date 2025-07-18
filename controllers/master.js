@@ -28,10 +28,32 @@ const createProductionDept = async (req, res) => {
 const getProductionDepts = async (req, res) => {
   try {
     let filter = {};
-    const productionDepts = await ProductionDepartment.find(filter);
+    if(req.query.buildingName) {
+      filter.buildingName = { $regex: req.query.buildingName, $options: "i" };
+    }
+    if(req.query.buildingCode) {
+      filter.buildingCode = { $regex: req.query.buildingCode, $options: "i" };
+    }
+
+    // Get pagination values from query with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Count total documents
+    const total = await ProductionDepartment.countDocuments(filter);
+
+    // Fetch paginated data
+    const employees = await ProductionDepartment.find(filter)
+      .skip(skip)
+      .limit(limit);
+
     res.status(200).send({
       status: true,
-      data: productionDepts,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
+      data: employees,
     });
   } catch (error) {
     res.status(500).send({
@@ -41,6 +63,7 @@ const getProductionDepts = async (req, res) => {
     });
   }
 };
+
 
 const getProductionDeptById = async (req, res) => {
   try {
@@ -158,13 +181,32 @@ const createProductionNature = async (req, res) => {
 const getProductionNatures = async (req, res) => {
   try {
     let filter = {};
-    const productionNatures = await ProductionNature.find(filter).populate(
-      "building_id",
-      "_id buildingName buildingCode"
-    );
-    console.log(productionNatures);
+    if(req.query.productionCode) {
+      filter.productionCode = req.query.productionCode;
+    }
+    if(req.query.productionNature) {
+      filter.productionNature = req.query.productionNature;
+    }
+
+    // Extract page and limit from query with defaults
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Count total documents for pagination metadata
+    const total = await ProductionNature.countDocuments(filter);
+
+    // Fetch paginated data with building details
+    const productionNatures = await ProductionNature.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .populate("building_id", "_id buildingName buildingCode");
+
     res.status(200).send({
       status: true,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page,
       data: productionNatures,
     });
   } catch (error) {
