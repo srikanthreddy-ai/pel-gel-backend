@@ -6,6 +6,7 @@ const {
   getAllTimeSheets,
   getTimeSheetById,
   updateTimeSheet,
+  createGeneralIncentive
 } = require("../controllers/employeeTimesheets");
 const {
   creatAllowance,
@@ -161,4 +162,5 @@ router.put("/updateTimeSheet/:id", verifyToken, updateTimeSheet);
 router.post("/createEmpAllowence", verifyToken, creatAllowance);
 router.get("/getEmpAllowences", verifyToken, getAllAllowances);
 router.put("/updateEmpAllowence/:id", verifyToken, updateAllowance);
+router.post("/createGeneralIncentive", verifyToken, createGeneralIncentive);
 module.exports = router;

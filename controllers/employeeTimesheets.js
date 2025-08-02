@@ -1,5 +1,6 @@
 const TimeSheet = require("../models/timeSheets");
 const log = require("../handlers/logger");
+const GeneralIncentive = require("../models/generalIncentives");
 
 const creatTimeSheet = async (req, res, next) => {
   try {
@@ -67,8 +68,6 @@ const getAllTimeSheets = async (req, res, next) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
-
-
 const getTimeSheetById = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -82,7 +81,6 @@ const getTimeSheetById = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const updateTimeSheet = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -98,10 +96,24 @@ const updateTimeSheet = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const createGeneralIncentive = async (req, res) => {
+    try {
+      const { incentives =[]} = req.body;
+      for (const incentive of incentives) {
+        const { amount, production_from_date, production_to_date, type } = incentive;
+        await GeneralIncentive.create({ amount, production_from_date, production_to_date, type });  
+      }
+      res.status(201).json({ message: "Incentives created successfully" });
+    } catch (error) {
+      log.error(error.message);
+      res.status(500).json({ message: "Internal server error" });
+    }
+};
 
 module.exports = {
   creatTimeSheet,
   getAllTimeSheets,
   getTimeSheetById,
   updateTimeSheet,
+  createGeneralIncentive
 };
