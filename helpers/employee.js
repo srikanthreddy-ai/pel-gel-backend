@@ -79,7 +79,7 @@ async function natureSchema(row) {
         if (!row.buildingId || !row.productionNature || !row.productionCode || !row.productionType) {
             throw new Error("Required fields are missing");
         }
-        const building = await ProductionDepartment.find({ "buildingCode": row.buildingId });
+        const building = await ProductionDepartment.findOne({ "buildingId": row.buildingId });
         console.log("Building found:", building);
         const mapped = {
             building_id: building._id,

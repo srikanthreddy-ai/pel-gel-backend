@@ -129,43 +129,50 @@ const uploadAllowenceMasterData = async (req, res) => {
 };
 
 const uploadNormsMaster = async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No file uploaded" });
-    }
-    const filePath = path.resolve(req.file.path);
-    const results = [];
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
 
-    try {
-      fs.createReadStream(filePath)
-        .pipe(csv())
-        .on("data", async (row) => {
-          results.push(await natureSchema(row));
-        })
-        .on("end", async () => {
-          try {
-            // Save to DB
-            console.log("Inserting data into DB:", results);
-            await Nature.insertMany(results);
-            fs.unlinkSync(filePath); // delete temp file
-            res.status(200).json({ message: "Norms uploaded successfully" });
-          } catch (err) {
-            console.error("DB insert error:", err);
-            res.status(500).json({ message: "Failed to save norms" });
-          }
-        });
-    } catch (err) {
-      console.error("File read error:", err);
-      res.status(500).json({ message: "Failed to process file" });
-    }
+  const filePath = path.resolve(req.file.path);
+
+  try {
+    const results = await parseCSV(filePath);
+    console.log("Inserting data into DB:", results);
+
+    await Nature.insertMany(results);
+
+    fs.unlinkSync(filePath); // delete temp file
+
+    res.status(200).json({ message: "Norms uploaded successfully", count: results.length });
   } catch (error) {
-    res.status(500).send({
-      status: false,
-      message: "Error creating normsMasterData",
+    console.error("Error processing file:", error);
+    res.status(500).json({
+      message: "Failed to process or save norms",
       error: error.message,
     });
   }
 };
+
+function parseCSV(filePath) {
+  return new Promise((resolve, reject) => {
+    const rawRows = [];
+
+    fs.createReadStream(filePath)
+      .pipe(csv())
+      .on('data', (row) => rawRows.push(row))
+      .on('end', async () => {
+        try {
+          const processed = await Promise.all(rawRows.map(row => natureSchema(row)));
+          resolve(processed);
+        } catch (err) {
+          reject(err);
+        }
+      })
+      .on('error', (err) => reject(err));
+  });
+}
+
+
 module.exports = {
     uploadEmployee,
     uploadMasterData,
