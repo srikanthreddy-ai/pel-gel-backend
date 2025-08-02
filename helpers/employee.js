@@ -1,3 +1,4 @@
+const ProductionDepartment = require("../models/prodDept");
 const employeeSchema = (row) => {
     try {
         return {
@@ -42,7 +43,6 @@ const employeeSchema = (row) => {
 
 const masterDataSchema = (row) => {
     try {
-
         return {
             buildingId: row.buildingId,
             buildingName: row.buildingName,
@@ -72,8 +72,53 @@ const allowenceDataSchema = (row) => {
         res.status(500).json({ message: "Failed to process file" });
     }
 };
+
+
+function natureSchema(row) {
+    try {
+        if (!row.buildingId || !row.productionNature || !row.productionCode || !row.productionType) {
+            throw new Error("Required fields are missing");
+        }
+        const building = ProductionDepartment.find({ "buildingCode": row.buildingId });
+        const mapped = {
+            building_id: building._id,
+            productionNature: row.productionNature,
+            productionCode: row.productionCode,
+            productionType: row.productionType,
+            startDate: new Date(row.startDate),
+            endDate: new Date(row.endDate),
+            manpower: Number(row.manpower) || 0,
+            norms: Number(row.norms) || 0,
+            description: row.description || "",
+            incentives: []
+        };
+
+        // Dynamically extract incentives by index
+        let i = 0;
+        while (`incentives.${i}.min` in row) {
+            mapped.incentives.push({
+                min: Number(row[`incentives.${i}.min`]) || 0,
+                max: Number(row[`incentives.${i}.max`]) || 0,
+                each: Number(row[`incentives.${i}.each`]) || 0,
+                amount: Number(row[`incentives.${i}.amount`]) || 0,
+                additionalValues: row[`incentives.${i}.additionalValues`] || false
+            });
+            i++;
+        }
+
+        return mapped;
+    } catch (error) {
+        console.error("File read error:", error);
+        res.status(500).json({ message: "Failed to process file" });
+    }
+}
+
+
+
+
 module.exports = {
     employeeSchema,
     masterDataSchema,
-    allowenceDataSchema
+    allowenceDataSchema,
+    natureSchema
 };

@@ -27,7 +27,7 @@ const creatTimeSheet = async (req, res, next) => {
 };
 const getAllTimeSheets = async (req, res, next) => {
   try {
-    const { building, nature, shift, date } = req.query;
+    const { building, nature, shift, fromDate, toDate } = req.query;
     const page = parseInt(req.query.page) || 1; // Default page 1
     const limit = parseInt(req.query.limit) || 10; // Default 10 records per page
     const skip = (page - 1) * limit;
@@ -38,9 +38,9 @@ const getAllTimeSheets = async (req, res, next) => {
     if (shift) filter.shiftName = shift;
 
     // Handle exact date match by creating a date range
-    if (date) {
-      const start = new Date(date);
-      const end = new Date(date);
+    if (fromDate && toDate) {
+      const start = new Date(fromDate);
+      const end = new Date(toDate);
       end.setDate(end.getDate() + 1);
       filter.productionDate = { $gte: start, $lt: end };
     }
