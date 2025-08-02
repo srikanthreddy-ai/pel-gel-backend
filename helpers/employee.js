@@ -74,12 +74,13 @@ const allowenceDataSchema = (row) => {
 };
 
 
-function natureSchema(row) {
+async function natureSchema(row) {
     try {
         if (!row.buildingId || !row.productionNature || !row.productionCode || !row.productionType) {
             throw new Error("Required fields are missing");
         }
-        const building = ProductionDepartment.find({ "buildingCode": row.buildingId });
+        const building = await ProductionDepartment.find({ "buildingCode": row.buildingId });
+        console.log("Building found:", building);
         const mapped = {
             building_id: building._id,
             productionNature: row.productionNature,
@@ -101,7 +102,7 @@ function natureSchema(row) {
                 max: Number(row[`incentives.${i}.max`]) || 0,
                 each: Number(row[`incentives.${i}.each`]) || 0,
                 amount: Number(row[`incentives.${i}.amount`]) || 0,
-                additionalValues: row[`incentives.${i}.additionalValues`] || false
+                additionalValues: row[`incentives.${i}.additionalValues`] === "TRUE" ? true : false
             });
             i++;
         }

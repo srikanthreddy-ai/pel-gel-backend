@@ -139,8 +139,8 @@ const uploadNormsMaster = async (req, res) => {
     try {
       fs.createReadStream(filePath)
         .pipe(csv())
-        .on("data", (row) => {
-          results.push(natureSchema(row));
+        .on("data", async (row) => {
+          results.push(await natureSchema(row));
         })
         .on("end", async () => {
           try {
