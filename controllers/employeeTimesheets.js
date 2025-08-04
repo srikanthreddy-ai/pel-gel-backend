@@ -100,8 +100,8 @@ const createGeneralIncentive = async (req, res) => {
     try {
       const { incentives =[]} = req.body;
       for (const incentive of incentives) {
-        const { amount, production_from_date, production_to_date, type } = incentive;
-        await GeneralIncentive.create({ amount, production_from_date, production_to_date, type });  
+        const { amount, building_id, production_from_date, production_to_date, type } = incentive;
+        await GeneralIncentive.create({ amount, building_id, production_from_date, production_to_date, type });  
       }
       res.status(201).json({ message: "Incentives created successfully" });
     } catch (error) {

@@ -20,7 +20,6 @@ const generalIncentives = new mongoose.Schema({
     },
     type: {
         type: String,
-        required: true,
     },
     isDeleted: {
         type: Boolean,
