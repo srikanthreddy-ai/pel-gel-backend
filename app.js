@@ -88,7 +88,6 @@ app.use((req, res, next) => {
   log.info(`${req.method} ${req.originalUrl}`);
   next();
 });
-
 // ──────────────────────── Swagger UI ──────────────────────── //
 app.use(
   "/api-docs",
@@ -122,6 +121,12 @@ mongoose
   .connect(mongoURI)
   .then(() => log.info("✅ MongoDB connected"))
   .catch((err) => log.error("❌ MongoDB connection failed:", err));
+
+
+app.use(express.static(path.join(__dirname, "./dist")));
+app.get("*", (_, res) => {
+  res.sendFile(path.join(__dirname, "./dist", "index.html"));
+});
 
 // ──────────────────────── Error Handling ──────────────────────── //
 
