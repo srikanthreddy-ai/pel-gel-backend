@@ -28,7 +28,7 @@ const creatTimeSheet = async (req, res, next) => {
 };
 const getAllTimeSheets = async (req, res, next) => {
   try {
-    const { building, nature, shift, fromDate, toDate } = req.query;
+    const { building, nature, shift, fromDate, toDate, date } = req.query;
     const page = parseInt(req.query.page) || 1; // Default page 1
     const limit = parseInt(req.query.limit) || 10; // Default 10 records per page
     const skip = (page - 1) * limit;
@@ -43,6 +43,13 @@ const getAllTimeSheets = async (req, res, next) => {
       const start = new Date(fromDate);
       const end = new Date(toDate);
       end.setDate(end.getDate() + 1);
+      filter.productionDate = { $gte: start, $lt: end };
+    }
+    if (date) {
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
       filter.productionDate = { $gte: start, $lt: end };
     }
 

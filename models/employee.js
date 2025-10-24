@@ -20,7 +20,7 @@ const EmployeeSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
-      required: true,
+      required: false,
     },
     fullName: {
       type: String,
@@ -30,7 +30,7 @@ const EmployeeSchema = new mongoose.Schema(
     },
     designation: {
       type: String,
-      required: true,
+      required: false,
     },
     department: {
       type: String,
@@ -97,16 +97,16 @@ const EmployeeSchema = new mongoose.Schema(
       type: String,
     },
     dateOfBirth: {
-      type: Date
+      type: String
     },
     joiningDate: {
-      type: Date,
+      type: String,
     },
     lastDate: {
-      type: Date,
+      type: String,
     },
     dateOfProbation: {
-      type: Date,
+      type: String,
     },
     isDeleted: {
       type: Boolean, default: false, index: true
@@ -119,6 +119,17 @@ const EmployeeSchema = new mongoose.Schema(
 // Optional: Combine first and last name into fullName before saving
 EmployeeSchema.pre("save", function (next) {
   this.fullName = `${this.title} ${this.firstName} ${this.lastName}`;
+  next();
+});
+
+EmployeeSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+  if (update.title || update.firstName || update.lastName) {
+    const title = update.title || this._update.$set.title;
+    const firstName = update.firstName || this._update.$set.firstName;
+    const lastName = update.lastName || this._update.$set.lastName;
+    this.setUpdate({ ...update, fullName: `${title} ${firstName} ${lastName}` });
+  }
   next();
 });
 
