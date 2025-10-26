@@ -57,6 +57,8 @@ const getNatureByCategory = async (req, res) => {
         incentives: item.incentives,
         startDate: item.startDate,
         endDate: item.endDate,
+        target: item.target,
+        reference_nature: item.reference_nature,
       });
     
       return result;

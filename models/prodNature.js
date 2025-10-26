@@ -51,8 +51,7 @@ const ProductionNature = new mongoose.Schema({
     }
   },
   reference_nature: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ProductionDept',
+    type: String,
   },
   startDate: {
     type: Date,
