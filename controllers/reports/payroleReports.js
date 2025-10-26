@@ -10,37 +10,76 @@ const dayWisePayReport = async (startDate, endDate, building) => {
   try {
     const buildingFilter = building && building !== 'all' ? { building_id: new Types.ObjectId(building) } : {};
     const incentives = await TimeSheets.aggregate([
+      // 1️⃣ Filter records by date range (and optional building filter)
       {
         $match: {
           productionDate: {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
-          ...buildingFilter,
+          ...buildingFilter, // e.g. { building_id: ObjectId("...") }
         },
       },
+
+      // 2️⃣ Lookup employee details
       {
         $lookup: {
-          from: "employees", // collection to join
-          localField: "employee_id", // field in TimeSheets
-          foreignField: "_id", // field in Employees
+          from: "employees",
+          localField: "employee_id",
+          foreignField: "_id",
           as: "employee",
         },
       },
+
+      // 3️⃣ Lookup building details
       {
-        $unwind: "$employee", // flatten the array (optional but common)
+        $lookup: {
+          from: "productiondept",
+          localField: "building_id",
+          foreignField: "_id",
+          as: "building",
+        },
       },
+
+      // 4️⃣ Safely unwind the joined arrays
+      {
+        $unwind: {
+          path: "$employee",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$building",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // 5️⃣ Shape the output data (cleaner and more readable)
       {
         $project: {
           _id: 1,
           productionDate: 1,
           shiftName: 1,
+          shiftHrs: 1,
+          workedHrs: 1,
           incentiveAmount: 1,
+
           employee_id: 1,
-          building_id: 1, // Include building_id if needed
-          employeeCode: 1,
-          "employee.fullName": 1,
-          "employee.empCode": 1,
+          building_id: 1,
+
+          // cleaner, flatter naming for easier use in frontend / API response
+          employeeName: "$employee.fullName",
+          employeeCode: "$employee.empCode",
+          buildingName: "$building.buildingName",
+        },
+      },
+
+      // 6️⃣ (Optional) Sort for predictable results
+      {
+        $sort: {
+          productionDate: 1,
+          employeeName: 1,
         },
       },
     ]);
@@ -74,6 +113,8 @@ const dayWisePayReport = async (startDate, endDate, building) => {
           building_id: 1, // Include building_id if needed
           "employee.fullName": 1,
           "employee.empCode": 1,
+          shiftHrs: 1,
+          workedHrs: 1,
         },
       },
     ]);
@@ -82,7 +123,7 @@ const dayWisePayReport = async (startDate, endDate, building) => {
 
     const getKey = (empCode, date) =>
       `${empCode}__${new Date(date).toISOString().split("T")[0]}`;
-    
+
     console.log("Incentives:", incentives);
     console.log("Allowances:", allowances);
     // Process incentives
@@ -91,13 +132,16 @@ const dayWisePayReport = async (startDate, endDate, building) => {
       const key = getKey(employeeCode, productionDate);
       const entry = groupedData.get(key) || {
         productionDate: new Date(productionDate).toISOString().split("T")[0],
-        empCode: employeeCode,
-        employeeName: employee?.fullName || "Unknown",
+        empCode: incentive?.employeeCode || "Unknown",
+        employeeName: incentive?.employeeName || "Unknown",
         incentives: 0,
         allowances: 0,
         total: 0,
+        workedHrs: incentive?.workedHrs,
+        shiftHrs: incentive?.shiftHrs,
+        building: incentive?.buildingName || "Unknown",
       };
-      const amount = parseInt(incentiveAmount) || 0;
+      const amount = parseFloat(incentiveAmount) || 0;
       entry.incentives += amount;
       groupedData.set(key, entry);
     }
@@ -114,14 +158,14 @@ const dayWisePayReport = async (startDate, endDate, building) => {
         allowances: 0,
         total: 0,
       };
-      const allowanceAmount = parseInt(amount) || 0;
+      const allowanceAmount = parseFloat(amount) || 0;
       entry.allowances += allowanceAmount;
       groupedData.set(key, entry);
     }
     for (const [key, entry] of groupedData) {
       entry.total = entry.incentives + entry.allowances;
     }
-     const sortedGroupedData = Array.from(groupedData.values()).sort((a, b) => {
+    const sortedGroupedData = Array.from(groupedData.values()).sort((a, b) => {
       return new Date(a.productionMonth) - new Date(b.productionMonth);
     });
 
@@ -139,37 +183,74 @@ const monthWisePayReport = async (startDate, endDate, building) => {
     // Aggregate Incentives for the given month range
     const buildingFilter = building && building !== 'all' ? { building_id: new Types.ObjectId(building) } : {};
     const incentives = await TimeSheets.aggregate([
+      // 1️⃣ Filter by production date range and (optional) building filter
       {
         $match: {
           productionDate: {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
-          ...buildingFilter
+          ...buildingFilter, // e.g. { building_id: ObjectId("...") }
         },
       },
+
+      // 2️⃣ Lookup employee details
       {
         $lookup: {
-          from: "employees", // collection to join
-          localField: "employee_id", // field in TimeSheets
-          foreignField: "_id", // field in Employees
+          from: "employees",
+          localField: "employee_id",
+          foreignField: "_id",
           as: "employee",
         },
       },
+
+      // 3️⃣ Lookup building details
       {
-        $unwind: "$employee", // flatten the array
+        $lookup: {
+          from: "productiondept",
+          localField: "building_id",
+          foreignField: "_id",
+          as: "building",
+        },
       },
+
+      // 4️⃣ Unwind the arrays (if there’s always one match, preserve nulls just in case)
+      {
+        $unwind: {
+          path: "$employee",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $unwind: {
+          path: "$building",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+
+      // 5️⃣ Project only the fields you actually need
       {
         $project: {
           _id: 1,
           productionDate: 1,
           shiftName: 1,
+          workedHrs: 1,
+          shiftHrs: 1,
           incentiveAmount: 1,
           employee_id: 1,
-          employeeCode: 1,
-          "employee.fullName": 1,
-          "employee.empCode": 1,
-          building_id: 1, // Include building_id if needed
+          building_id: 1,
+          employeeCode: "$employee.empCode", // rename for clarity
+          employeeName: "$employee.fullName",
+          buildingName: "$building.buildingName",
+          buildingRefId: "$building._id",
+        },
+      },
+
+      // 6️⃣ (Optional) Sort results
+      {
+        $sort: {
+          productionDate: 1,
+          employeeName: 1,
         },
       },
     ]);
@@ -194,6 +275,14 @@ const monthWisePayReport = async (startDate, endDate, building) => {
         },
       },
       {
+        $lookup: {
+          from: "productiondept", // collection to join
+          localField: "building_id", // field in TimeSheets
+          foreignField: "_id", // field in Buildings
+          as: "building",
+        },
+      },
+      {
         $project: {
           _id: 1,
           productionDate: 1,
@@ -203,6 +292,7 @@ const monthWisePayReport = async (startDate, endDate, building) => {
           allowance_id: 1,
           "employee.fullName": 1,
           "employee.empCode": 1,
+          "building.buildingName": 1,
           building_id: 1, // Include building_id if needed
         },
       },
@@ -219,12 +309,15 @@ const monthWisePayReport = async (startDate, endDate, building) => {
       const entry = groupedData.get(key) || {
         productionMonth: new Date(i.productionDate).toISOString().split("T")[0].slice(0, 7),
         empCode: i.employeeCode,
-        employeeName: i.employee.fullName,
+        employeeName: i.employeeName,
         incentives: 0,
         allowances: 0,
         total: 0,
+        workedHrs: i.workedHrs,
+        shiftHrs: i.shiftHrs,
+        incentive_building: i.buildingName,
       };
-      const incentiveAmount = parseInt(i.incentiveAmount) || 0;
+      const incentiveAmount = parseFloat(i.incentiveAmount) || 0;
       entry.incentives += incentiveAmount;
       groupedData.set(key, entry);
     }
@@ -239,13 +332,14 @@ const monthWisePayReport = async (startDate, endDate, building) => {
         incentives: 0,
         allowances: 0,
         total: 0,
+        allowance_building: a.building.buildingName,
       };
-      const allowanceAmount = parseInt(a.amount) || 0;
+      const allowanceAmount = parseFloat(a.amount) || 0;
       entry.allowances += allowanceAmount;
       groupedData.set(key, entry);
     }
 
-     const sortedGroupedData = Array.from(groupedData.values()).sort((a, b) => {
+    const sortedGroupedData = Array.from(groupedData.values()).sort((a, b) => {
       return new Date(a.productionMonth) - new Date(b.productionMonth);
     });
 

@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
+const { type } = require("os");
 
 const incentiveSchema = new mongoose.Schema({
-  min:Number,
+  min: Number,
   max: Number,
   amount: Number,
   each: Number,
@@ -12,7 +13,7 @@ const incentiveSchema = new mongoose.Schema({
 }, { _id: false });
 
 const ProductionNature = new mongoose.Schema({
-  building_id:{
+  building_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ProductionDept',
     required: true,
@@ -38,7 +39,15 @@ const ProductionNature = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  incentives:[incentiveSchema],
+  incentives: [incentiveSchema],
+  target: {
+    type: Boolean,
+    default: false
+  },
+  reference_nature: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductionNature',
+  },
   startDate: {
     type: Date,
     required: true,

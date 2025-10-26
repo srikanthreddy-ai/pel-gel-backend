@@ -51,6 +51,14 @@ const employeeTimeSheet = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  targetNorms: {
+    type: Number,
+    required: true,
+  },
+  netProduction: {
+    type: Number,
+    required: true,
+  },
   dateTime: {
     type: Date,
     default: Date.now,

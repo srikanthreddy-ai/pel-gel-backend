@@ -46,13 +46,21 @@ UserSchema.pre("save", async function (next) {
 
 UserSchema.pre("findOneAndUpdate", async function (next) {
   const update = this.getUpdate();
-
-  if (update.password) {
-    const salt = await bcrypt.genSalt(10);
-    update.password = await bcrypt.hash(update.password, salt);
-    this.setUpdate(update);
+  if (!update.password && !(update.$set && update.$set.password)) {
+    return next();
   }
+  const password = update.password || update.$set.password;
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    if (update.password) {
+      update.password = hashedPassword;
+    } else {
+      update.$set.password = hashedPassword;
+    }
+
+    this.setUpdate(update);
   next();
 });
 
