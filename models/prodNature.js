@@ -41,12 +41,18 @@ const ProductionNature = new mongoose.Schema({
   },
   incentives: [incentiveSchema],
   target: {
-    type: Boolean,
-    default: false
+    enabled:{
+      type: Boolean,
+      default: false
+    },
+    value: {
+      type: Number,
+      default: 0
+    }
   },
   reference_nature: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'ProductionNature',
+    ref: 'ProductionDept',
   },
   startDate: {
     type: Date,
