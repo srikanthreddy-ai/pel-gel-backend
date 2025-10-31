@@ -1,0 +1,1 @@
+echo MONGO_URI=mongodb+srv://pel:C23pGTAsJnJJqfXF@cluster0.ys2ehnq.mongodb.net/PEL?retryWrites=true&w=majority&appName=Cluster0 > .env
